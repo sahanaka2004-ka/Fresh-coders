@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyAI — Smart Study Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0f14;
+  --surface:#13161d;
+  --surface2:#1a1e28;
+  --border:rgba(255,255,255,0.06);
+  --border2:rgba(255,255,255,0.10);
+  --text:#eef0f5;
+  --text2:#8b90a0;
+  --text3:#555b6e;
+  --accent:#7c6fff;
+  --accent2:#a78bfa;
+  --accent-bg:rgba(124,111,255,0.10);
+  --accent-border:rgba(124,111,255,0.25);
+  --success:#34d399;
+  --success-bg:rgba(52,211,153,0.10);
+  --success-border:rgba(52,211,153,0.25);
+  --warn:#fbbf24;
+  --warn-bg:rgba(251,191,36,0.10);
+  --warn-border:rgba(251,191,36,0.25);
+  --danger:#f87171;
+  --danger-bg:rgba(248,113,113,0.10);
+  --danger-border:rgba(248,113,113,0.25);
+  --info:#60a5fa;
+  --info-bg:rgba(96,165,250,0.10);
+  --info-border:rgba(96,165,250,0.25);
+  --sms:#4ade80;
+  --sms-bg:rgba(74,222,128,0.10);
+  --sms-border:rgba(74,222,128,0.25);
+  --setup:#fb923c;
+  --setup-bg:rgba(251,146,60,0.10);
+  --setup-border:rgba(251,146,60,0.28);
+  --r:8px;--rl:12px;--rxl:16px;
+}
+body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);min-height:100vh;display:flex;flex-direction:column}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,111,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(124,111,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.app{display:flex;flex-direction:column;gap:0;position:relative;z-index:1}
+
+/* NAV */
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:58px;background:rgba(13,15,20,0.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);gap:12px;position:sticky;top:0;z-index:50}
+.brand{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;letter-spacing:-.3px}
+.brand-icon{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#7c6fff,#a78bfa);display:flex;align-items:center;justify-content:center}
+.brand span{background:linear-gradient(135deg,#7c6fff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-tabs{display:flex;gap:2px;background:var(--surface);border-radius:10px;padding:3px;border:1px solid var(--border)}
+.ntab{padding:6px 14px;border-radius:7px;font-size:12.5px;font-weight:500;cursor:pointer;color:var(--text2);transition:all .18s;white-space:nowrap}
+.ntab:hover{color:var(--text)}
+.ntab.on{background:var(--surface2);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.notif-btn{position:relative;display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r);border:1px solid var(--border2);cursor:pointer;font-size:12.5px;font-weight:500;color:var(--text2);background:var(--surface);transition:all .18s}
+.notif-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--accent-border)}
+.nbadge{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;background:linear-gradient(135deg,#7c6fff,#a78bfa);color:#fff;font-size:10px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;font-weight:600;border:2px solid var(--bg)}
+
+/* PAGES */
+.page{display:none;padding:24px;flex-direction:column;gap:18px;max-width:960px;margin:0 auto;width:100%}
+.page.on{display:flex}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rxl);padding:20px 24px}
+.card-title{font-size:11.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:16px}
+
+/* UPLOAD */
+.drop-zone{border:1.5px dashed var(--border2);border-radius:var(--rxl);padding:48px 24px;text-align:center;cursor:pointer;transition:all .25s;background:var(--surface);position:relative;overflow:hidden}
+.drop-zone::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(124,111,255,.06),transparent 70%);pointer-events:none}
+.drop-zone.drag{border-color:#7c6fff;background:rgba(124,111,255,.05)}
+.drop-zone input[type=file]{display:none}
+.dz-icon{width:52px;height:52px;margin:0 auto 16px;background:var(--accent-bg);border-radius:14px;display:flex;align-items:center;justify-content:center;border:1px solid var(--accent-border)}
+.dz-icon svg{width:22px;height:22px;stroke:#7c6fff;fill:none;stroke-width:1.8}
+.dz-title{font-size:16px;font-weight:500;margin-bottom:8px;color:var(--text);font-family:'Syne',sans-serif}
+.dz-sub{font-size:13px;color:var(--text2);line-height:1.6}
+.file-chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.chip{font-size:10.5px;padding:3px 9px;border-radius:20px;border:1px solid var(--border2);color:var(--text3);font-family:'DM Mono',monospace;background:var(--surface2);letter-spacing:.04em}
+
+/* PROCESSING */
+.proc-bar-wrap{height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;margin:12px 0 16px}
+.proc-bar{height:100%;border-radius:2px;background:linear-gradient(90deg,#7c6fff,#a78bfa);transition:width .4s ease}
+.step-row{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--text2);padding:7px 0;border-bottom:1px solid var(--border)}
+.step-row:last-child{border-bottom:none}
+.step-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.step-done{background:var(--success-bg);color:var(--success);border:1px solid var(--success-border)}
+.step-run{background:var(--info-bg);color:var(--info);border:1px solid var(--info-border)}
+.step-wait{background:var(--surface2);color:var(--text3);border:1px solid var(--border)}
+
+/* QUIZ */
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rxl);padding:18px 20px;margin-bottom:12px;transition:border-color .2s}
+.q-card:hover{border-color:var(--border2)}
+.q-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.q-num{font-size:10.5px;font-weight:500;font-family:'DM Mono',monospace;color:var(--accent2);background:var(--accent-bg);padding:2px 8px;border-radius:4px;border:1px solid var(--accent-border)}
+.q-type{font-size:10.5px;padding:2px 8px;border-radius:4px;border:1px solid var(--border);color:var(--text2)}
+.diff-e{background:var(--success-bg);color:var(--success);font-size:10.5px;padding:2px 8px;border-radius:4px;border:1px solid var(--success-border)}
+.diff-m{background:var(--warn-bg);color:var(--warn);font-size:10.5px;padding:2px 8px;border-radius:4px;border:1px solid var(--warn-border)}
+.diff-h{background:var(--danger-bg);color:var(--danger);font-size:10.5px;padding:2px 8px;border-radius:4px;border:1px solid var(--danger-border)}
+.q-text{font-size:14px;color:var(--text);line-height:1.7;margin-bottom:12px}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r);border:1px solid var(--border);cursor:pointer;transition:all .15s;font-size:13px;color:var(--text2)}
+.opt:hover{border-color:var(--accent-border);color:var(--text);background:var(--accent-bg)}
+.opt.sel{border-color:#7c6fff;background:var(--accent-bg);color:var(--text)}
+.opt.right{border-color:var(--success-border);background:var(--success-bg);color:var(--success)}
+.opt.wrong{border-color:var(--danger-border);background:var(--danger-bg);color:var(--danger)}
+.opt-dot{width:18px;height:18px;border-radius:50%;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;font-family:'DM Mono',monospace;flex-shrink:0}
+.ans-box{margin-top:10px;padding:10px 14px;border-left:2px solid var(--success-border);background:var(--success-bg);color:var(--success);font-size:12.5px;border-radius:0 var(--r) var(--r) 0}
+.short-ta{width:100%;min-height:80px;resize:vertical;border-radius:var(--r);border:1px solid var(--border);padding:10px 14px;font-size:13px;color:var(--text);background:var(--surface2);font-family:'DM Sans',sans-serif;margin-top:8px;transition:border-color .15s;outline:none}
+.short-ta:focus{border-color:var(--accent-border)}
+
+/* SCORE RING */
+.score-wrap{display:flex;align-items:center;gap:24px}
+.ring-wrap{position:relative;width:88px;height:88px;flex-shrink:0}
+.ring-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.ring-pct{font-size:20px;font-weight:600;font-family:'Syne',sans-serif}
+.ring-sub{font-size:9.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
+.break-rows{flex:1;display:flex;flex-direction:column;gap:9px}
+.br-row{display:flex;align-items:center;gap:8px;font-size:12px}
+.br-lbl{color:var(--text2);width:52px}
+.br-bg{flex:1;height:5px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.br-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.br-val{font-family:'DM Mono',monospace;font-size:11px;width:30px;text-align:right;color:var(--text2)}
+
+/* NOTIFICATIONS */
+.notif-list{display:flex;flex-direction:column;gap:10px}
+.notif-item{display:flex;gap:14px;padding:16px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rxl);align-items:flex-start;transition:all .2s}
+.notif-item.unread{border-color:var(--accent-border);background:rgba(124,111,255,.04)}
+.notif-item.urgent{border-color:var(--danger-border);background:var(--danger-bg)}
+.notif-item.due{border-color:var(--warn-border);background:var(--warn-bg)}
+.notif-item.sms-sent{border-color:var(--sms-border);background:var(--sms-bg)}
+.ni-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px}
+.ni-body{flex:1}
+.ni-title{font-size:13.5px;font-weight:500;color:var(--text);margin-bottom:4px}
+.ni-sub{font-size:12px;color:var(--text2);line-height:1.6}
+.ni-time{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;white-space:nowrap}
+.ni-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.ni-btn{font-size:11.5px;padding:5px 11px;border-radius:6px;border:1px solid var(--border2);cursor:pointer;color:var(--text2);background:var(--surface);font-family:'DM Sans',sans-serif;transition:all .15s}
+.ni-btn:hover{background:var(--surface2);color:var(--text)}
+.ni-btn.primary{background:var(--accent-bg);border-color:var(--accent-border);color:var(--accent2)}
+.ni-btn.sms{background:var(--sms-bg);border-color:var(--sms-border);color:var(--sms)}
+
+/* SCHEDULE */
+.sched-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:12px}
+.sched-card{padding:16px;border-radius:var(--rl);border:1px solid var(--border);background:var(--surface2);display:flex;flex-direction:column;gap:6px;transition:border-color .2s}
+.sched-card:hover{border-color:var(--border2)}
+.sched-day{font-size:10.5px;font-weight:500;color:var(--text3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em}
+.sched-date{font-size:14px;font-weight:500;color:var(--text);font-family:'Syne',sans-serif}
+.sched-topic{font-size:12px;color:var(--text2)}
+.sched-countdown{font-size:11.5px;font-family:'DM Mono',monospace}
+
+/* COUNTDOWN */
+.timer-wrap{display:flex;gap:12px;margin-top:8px;align-items:center}
+.timer-unit{text-align:center}
+.timer-val{font-size:24px;font-weight:600;font-family:'Syne',sans-serif;color:var(--text);background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:8px 14px;min-width:58px;display:block;text-align:center}
+.timer-lbl{font-size:10px;color:var(--text3);margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
+.timer-sep{font-size:22px;font-weight:300;color:var(--text3);margin-bottom:14px}
+
+/* TOAST */
+.toast-area{position:fixed;top:70px;right:16px;display:flex;flex-direction:column;gap:8px;z-index:200;pointer-events:none}
+.toast{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:rgba(26,30,40,.97);border:1px solid var(--border2);border-radius:var(--rxl);min-width:300px;max-width:360px;pointer-events:all;opacity:0;transform:translateX(24px);transition:all .3s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.toast.show{opacity:1;transform:translateX(0)}
+.toast.urgent{border-color:var(--danger-border)}
+.toast.due{border-color:var(--warn-border)}
+.toast.info{border-color:var(--accent-border)}
+.toast.sms{border-color:var(--sms-border)}
+.toast.warn{border-color:var(--warn-border)}
+.toast-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.toast-body{flex:1}
+.toast-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.toast-msg{font-size:12px;color:var(--text2);line-height:1.5}
+.toast-close{font-size:18px;color:var(--text3);cursor:pointer;padding:0 2px;line-height:1;flex-shrink:0;opacity:.7}
+.toast-close:hover{opacity:1}
+
+/* SETUP WIZARD MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:20px;width:100%;max-width:580px;padding:28px;display:flex;flex-direction:column;gap:20px;transform:translateY(16px);transition:transform .3s cubic-bezier(.34,1.1,.64,1);max-height:92vh;overflow-y:auto}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.modal-title{font-size:16px;font-weight:600;font-family:'Syne',sans-serif;color:var(--text)}
+.modal-subtitle{font-size:12.5px;color:var(--text2);margin-top:4px;line-height:1.5}
+.modal-close{width:28px;height:28px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;flex-shrink:0}
+.modal-close:hover{color:var(--text)}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-label{font-size:12px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:6px}
+.form-label .req{color:var(--danger);font-size:11px}
+.form-input{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:10px 14px;font-size:13.5px;color:var(--text);font-family:'DM Sans',sans-serif;transition:border-color .15s;outline:none;width:100%}
+.form-input:focus{border-color:var(--accent-border);background:rgba(124,111,255,.04)}
+.form-input::placeholder{color:var(--text3)}
+.form-input.mono{font-family:'DM Mono',monospace;font-size:12.5px;letter-spacing:.02em}
+.form-hint{font-size:11.5px;color:var(--text3);line-height:1.5}
+.form-hint a{color:var(--accent2);text-decoration:none}
+.form-hint a:hover{text-decoration:underline}
+.form-textarea{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:10px 14px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;transition:border-color .15s;outline:none;resize:vertical;min-height:90px;line-height:1.7;width:100%}
+.form-textarea:focus{border-color:var(--accent-border)}
+.form-textarea::placeholder{color:var(--text3)}
+
+/* SETUP STEPS */
+.setup-steps{display:flex;flex-direction:column;gap:10px}
+.setup-step{display:flex;gap:12px;padding:14px 16px;background:var(--surface2);border-radius:var(--rl);border:1px solid var(--border)}
+.step-num{width:24px;height:24px;border-radius:6px;background:var(--accent-bg);border:1px solid var(--accent-border);color:var(--accent2);font-size:11px;font-weight:700;font-family:'DM Mono',monospace;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-content{flex:1}
+.step-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+.step-desc{font-size:12px;color:var(--text2);line-height:1.6}
+.step-desc a{color:var(--accent2);text-decoration:none}
+.step-desc a:hover{text-decoration:underline}
+.step-desc code{background:var(--surface);border:1px solid var(--border2);border-radius:4px;padding:1px 6px;font-family:'DM Mono',monospace;font-size:11.5px;color:var(--accent2)}
+
+/* TEMPLATE CARD */
+.template-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px}
+.template-box-title{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:10px;font-weight:500}
+.template-field{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
+.template-field:last-child{border-bottom:none}
+.tf-key{font-family:'DM Mono',monospace;color:var(--accent2);width:80px;flex-shrink:0;font-size:11.5px;padding-top:1px}
+.tf-val{color:var(--text2);line-height:1.5}
+
+/* DIVIDER */
+.modal-divider{height:1px;background:var(--border);margin:2px 0}
+
+/* PILLS / BADGES */
+.badge{font-size:10.5px;padding:3px 9px;border-radius:20px;border:1px solid;font-weight:500}
+.badge-p{background:var(--accent-bg);color:var(--accent2);border-color:var(--accent-border)}
+.badge-s{background:var(--success-bg);color:var(--success);border-color:var(--success-border)}
+.badge-w{background:var(--warn-bg);color:var(--warn);border-color:var(--warn-border)}
+.badge-d{background:var(--danger-bg);color:var(--danger);border-color:var(--danger-border)}
+.badge-e{background:var(--sms-bg);color:var(--sms);border-color:var(--sms-border)}
+
+/* UTILITIES */
+.row{display:flex;align-items:center;gap:10px}
+.flex1{flex:1}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:var(--r);border:1px solid var(--border2);cursor:pointer;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;color:var(--text2);background:var(--surface);transition:all .18s}
+.btn:hover{background:var(--surface2);color:var(--text)}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn.prim{background:linear-gradient(135deg,rgba(124,111,255,.2),rgba(167,139,250,.1));border-color:var(--accent-border);color:var(--accent2)}
+.btn.prim:hover{background:linear-gradient(135deg,rgba(124,111,255,.3),rgba(167,139,250,.18))}
+.btn.sms-btn{background:var(--sms-bg);border-color:var(--sms-border);color:var(--sms)}
+.btn.sms-btn:hover{background:rgba(74,222,128,.18)}
+.btn.setup-btn{background:var(--setup-bg);border-color:var(--setup-border);color:var(--setup)}
+.btn.setup-btn:hover{background:rgba(251,146,60,.18)}
+.btn.sm{padding:6px 13px;font-size:12px}
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sec-title{font-size:15px;font-weight:600;color:var(--text);font-family:'Syne',sans-serif}
+.divider{height:1px;background:var(--border);margin:4px 0}
+.empty-state{text-align:center;padding:48px 20px;color:var(--text3);font-size:13.5px;border:1px dashed var(--border);border-radius:var(--rxl);background:var(--surface)}
+.empty-state svg{margin:0 auto 12px;display:block;opacity:.3}
+.spin{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pulse{animation:pulse 1.5s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.page-hero{padding:8px 0 4px;border-bottom:1px solid var(--border);margin-bottom:4px}
+.page-hero-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.5px}
+.page-hero-sub{font-size:13px;color:var(--text2);margin-top:4px}
+.section-label{font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.styled-select{font-size:12.5px;padding:7px 12px;border-radius:var(--r);border:1px solid var(--border2);color:var(--text);background:var(--surface);font-family:'DM Sans',sans-serif;cursor:pointer;transition:border-color .15s;outline:none}
+.styled-select:focus{border-color:var(--accent-border)}
+.check-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface2);border-radius:var(--r);border:1px solid var(--border);cursor:pointer;transition:border-color .15s}
+.check-row:hover{border-color:var(--border2)}
+.check-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.check-row-label{font-size:13px;color:var(--text);flex:1}
+.check-row-sub{font-size:11.5px;color:var(--text2)}
+
+/* STATUS BANNER */
+.twilio-status{border-radius:var(--rxl);padding:14px 18px;display:flex;align-items:center;gap:12px;border:1px solid}
+.twilio-status.configured{background:var(--success-bg);border-color:var(--success-border)}
+.twilio-status.not-configured{background:var(--setup-bg);border-color:var(--setup-border)}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* SMS PREVIEW in modal */
+.sms-prev{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden}
+.sms-prev-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center}
+.sms-prev-icon{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#4ade80,#22c55e);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sms-prev-meta strong{font-size:13px;color:var(--text);display:block}
+.sms-prev-meta span{font-size:11.5px;color:var(--text3)}
+.sms-prev-body{padding:16px;font-size:13px;color:var(--text2);line-height:1.8;font-family:'DM Mono',monospace;font-size:12px;white-space:pre-wrap;word-break:break-word}
+
+/* SMS BANNER on results */
+.sms-cta-banner{background:linear-gradient(135deg,rgba(74,222,128,.08),rgba(124,111,255,.06));border:1px solid var(--sms-border);border-radius:var(--rxl);padding:18px 20px;display:flex;align-items:flex-start;gap:14px}
+.sms-cta-icon{width:40px;height:40px;border-radius:10px;background:var(--sms-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* Badge sms */
+.badge-e{background:var(--sms-bg);color:var(--sms);border-color:var(--sms-border)}
+</style>
+</head>
+<body>
+
+<div class="app">
+<div class="toast-area" id="toastArea"></div>
+
+<!-- ══════════════════════════════════════
+     TWILIO SMS SETUP MODAL
+     Users enter their Twilio credentials here once.
+     SMS notifications will then be sent for real.
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="setupModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">📱 SMS Setup — One-Time Configuration</div>
+        <div class="modal-subtitle">StudyAI uses <strong style="color:var(--accent2)">Twilio</strong> to send real SMS notifications for free — no server needed via a CORS proxy. Follow the 3 steps below to activate.</div>
+      </div>
+      <div class="modal-close" onclick="document.getElementById('setupModal').classList.remove('open')">×</div>
+    </div>
+
+    <div class="setup-steps">
+      <div class="setup-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Create a free Twilio account</div>
+          <div class="step-desc">Go to <a href="https://www.twilio.com/try-twilio" target="_blank">twilio.com/try-twilio</a> → Sign up free (free trial credit included, no credit card required initially). Verify your phone number to activate.</div>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Get a Twilio phone number</div>
+          <div class="step-desc">In your Twilio Console → <strong style="color:var(--text)">Phone Numbers</strong> → <strong style="color:var(--text)">Get a Number</strong> → choose a number with SMS capability. This becomes your sender number. Copy it in E.164 format, e.g. <code>+12025551234</code>.</div>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Copy your credentials</div>
+          <div class="step-desc">In your <strong style="color:var(--text)">Twilio Console Dashboard</strong>, copy your <code>Account SID</code> and <code>Auth Token</code>. These are used to authenticate your SMS requests.</div>
+          <div class="template-box" style="margin-top:10px">
+            <div class="template-box-title">What you need</div>
+            <div class="template-field"><span class="tf-key">Account SID</span><span class="tf-val">Found on the Twilio Console home page — starts with <strong style="color:var(--text)">AC</strong></span></div>
+            <div class="template-field"><span class="tf-key">Auth Token</span><span class="tf-val">Found below Account SID on the Console home page — keep this secret</span></div>
+            <div class="template-field"><span class="tf-key">From Number</span><span class="tf-val">Your Twilio phone number in E.164 format, e.g. <code>+12025551234</code></span></div>
+          </div>
+          <div class="step-desc" style="margin-top:8px;color:var(--warn)">⚠ <strong>Free trial note:</strong> With a free Twilio trial, you can only send SMS to verified numbers. Go to <strong style="color:var(--text)">Verify a number</strong> in your console to add your recipient number.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-divider"></div>
+    <div class="section-label" style="margin-bottom:14px">Paste Your Twilio Credentials</div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="form-group">
+        <label class="form-label">Account SID <span class="req">*</span></label>
+        <input type="text" id="twilio_sid" class="form-input mono" placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+        <div class="form-hint">Found on your <strong>Twilio Console Dashboard</strong> — starts with "AC"</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Auth Token <span class="req">*</span></label>
+        <input type="password" id="twilio_token" class="form-input mono" placeholder="Your Twilio Auth Token">
+        <div class="form-hint">Found below Account SID on the Console — keep this private</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">From Phone Number <span class="req">*</span></label>
+        <input type="text" id="twilio_from" class="form-input mono" placeholder="+12025551234">
+        <div class="form-hint">Your Twilio number in E.164 format (e.g. <strong>+12025551234</strong>)</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
+      <button class="btn sm" onclick="document.getElementById('setupModal').classList.remove('open')">Cancel</button>
+      <button class="btn sm prim" onclick="saveTwilioConfig()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save & Activate
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SEND SMS MODAL
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="smsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">📱 Send Revision Summary via SMS</div>
+        <div class="modal-subtitle">Real SMS sent via Twilio — arrives on your phone instantly.</div>
+      </div>
+      <div class="modal-close" onclick="closeSmsModal()">×</div>
+    </div>
+
+    <!-- Not configured warning -->
+    <div id="smsNotConfiguredWarn" style="display:none;padding:14px 16px;background:var(--setup-bg);border:1px solid var(--setup-border);border-radius:var(--rl)">
+      <div style="font-size:13px;font-weight:500;color:var(--setup);margin-bottom:6px">⚠ Twilio Not Configured Yet</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6">You need to connect Twilio to send real SMS messages. It's free to start and takes ~5 minutes. Click "Setup SMS" below to get started.</div>
+      <button class="btn sm setup-btn" onclick="closeSmsModal();openSetupModal()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        Setup Twilio Now
+      </button>
+    </div>
+
+    <div id="smsFormFields">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="form-group">
+          <label class="form-label">Your Phone Number <span class="req">*</span></label>
+          <input type="tel" id="smsTo" class="form-input mono" placeholder="+919876543210">
+          <div class="form-hint">Enter in E.164 format: <strong>+[country code][number]</strong> — e.g. +919876543210 for India, +12025551234 for US</div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px">
+        <div class="section-label">SMS Preview</div>
+        <div class="sms-prev">
+          <div class="sms-prev-head">
+            <div class="sms-prev-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+            <div class="sms-prev-meta"><strong>StudyAI Reminder</strong><span>via Twilio SMS</span></div>
+          </div>
+          <div class="sms-prev-body" id="smsPreviewBody">Complete a quiz to see the SMS preview.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;align-items:center">
+      <button class="btn sm setup-btn" onclick="closeSmsModal();openSetupModal()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+        Setup / Change Keys
+      </button>
+      <button class="btn sm" onclick="closeSmsModal()">Cancel</button>
+      <button class="btn sm sms-btn" id="sendSmsBtn" onclick="sendSms()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <span id="sendSmsBtnText">Send SMS</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════  TOP NAV  ══════════════════════════════════════ -->
+<div class="topnav">
+  <div class="brand">
+    <div class="brand-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+    Study<span>AI</span>
+  </div>
+  <div class="nav-tabs">
+    <div class="ntab on" onclick="goPage('upload',this)">Upload</div>
+    <div class="ntab" onclick="goPage('quiz',this)">Quiz</div>
+    <div class="ntab" onclick="goPage('results',this)">Results</div>
+    <div class="ntab" onclick="goPage('revision',this)">Revision</div>
+    <div class="ntab" onclick="goPage('notifications',this)">Notifications</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="btn sm setup-btn" onclick="openSetupModal()" title="Configure Twilio for real SMS notifications" id="setupNavBtn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+      <span id="setupNavLabel">Setup SMS</span>
+    </button>
+    <div class="notif-btn" onclick="goPageBtn('notifications')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1a5 5 0 015 5v3l1.5 2.5H1.5L3 9V6a5 5 0 015-5z"/><path d="M6.5 13.5a1.5 1.5 0 003 0"/></svg>
+      Alerts
+      <span class="nbadge" id="notifCount">0</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════  PAGE: UPLOAD  ══════════════════════════════════════ -->
+<div class="page on" id="page-upload">
+  <div class="page-hero">
+    <div class="page-hero-title">Upload Study Material</div>
+    <div class="page-hero-sub">Drop any file — AI extracts topics, builds a quiz, and schedules your revision automatically.</div>
+  </div>
+  <div class="card">
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()"
+      ondragover="event.preventDefault();this.classList.add('drag')"
+      ondragleave="this.classList.remove('drag')"
+      ondrop="handleDrop(event)">
+      <input type="file" id="fileInput" accept=".pdf,.txt,.docx,.pptx,.png,.jpg,.jpeg" onchange="handleFiles(this.files)">
+      <div class="dz-icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+      <div class="dz-title">Drop file here or click to browse</div>
+      <div class="dz-sub">AI will extract topics and generate a quiz automatically</div>
+      <div class="file-chips">
+        <span class="chip">.PDF</span><span class="chip">.TXT</span><span class="chip">.DOCX</span><span class="chip">.PPTX</span><span class="chip">.PNG</span><span class="chip">.JPG</span>
+      </div>
+    </div>
+  </div>
+  <div id="procCard" style="display:none" class="card">
+    <div class="sec-header">
+      <div class="sec-title" id="procTitle">Processing file...</div>
+      <span class="badge badge-p pulse" id="procBadge">Working</span>
+    </div>
+    <div class="proc-bar-wrap"><div class="proc-bar" id="procBar" style="width:0%"></div></div>
+    <div id="stepList"></div>
+  </div>
+  <div id="uploadedCard" style="display:none" class="card">
+    <div class="sec-header">
+      <div class="sec-title">Processed File</div>
+      <button class="btn sm prim" onclick="goPageBtn('quiz')">Generate Quiz →</button>
+    </div>
+    <div id="uploadedList"></div>
+  </div>
+  <div id="topicsCard" style="display:none" class="card">
+    <div class="card-title">Topics Extracted by AI</div>
+    <div id="topicsList" style="display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════  PAGE: QUIZ  ══════════════════════════════════════ -->
+<div class="page" id="page-quiz">
+  <div id="quizEmpty" class="empty-state">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><circle cx="12" cy="12" r="10"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    Upload a file first to generate a quiz.<br><br>
+    <button class="btn prim" onclick="goPageBtn('upload')">← Go to Upload</button>
+  </div>
+  <div id="quizContent" style="display:none">
+    <div class="sec-header">
+      <div>
+        <div class="sec-title" id="quizTopicLabel">Quiz</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:3px" id="quizMeta"></div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <select id="diffSelect" class="styled-select">
+          <option value="mixed">Mixed difficulty</option>
+          <option value="easy">Easy only</option>
+          <option value="medium">Medium only</option>
+          <option value="hard">Hard only</option>
+        </select>
+        <button class="btn prim" onclick="generateQuiz()">Generate Quiz →</button>
+      </div>
+    </div>
+    <div id="quizQuestions"></div>
+    <div id="submitRow" style="display:none;text-align:center;margin-top:4px">
+      <button class="btn prim" style="padding:12px 32px;font-size:14px" onclick="submitQuiz()">Submit & Analyse →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════  PAGE: RESULTS  ══════════════════════════════════════ -->
+<div class="page" id="page-results">
+  <div id="resultsEmpty" class="empty-state">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    No quiz completed yet.<br><br>
+    <button class="btn prim" onclick="goPageBtn('quiz')">← Take a Quiz</button>
+  </div>
+  <div id="resultsContent" style="display:none">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-bottom:14px">
+      <div class="card">
+        <div class="card-title">Your Score</div>
+        <div class="score-wrap">
+          <div class="ring-wrap">
+            <svg width="88" height="88" viewBox="0 0 88 88">
+              <circle cx="44" cy="44" r="36" fill="none" stroke="var(--surface2)" stroke-width="8"/>
+              <circle id="ringArc" cx="44" cy="44" r="36" fill="none" stroke="#7c6fff" stroke-width="8" stroke-dasharray="226" stroke-dashoffset="226" stroke-linecap="round" transform="rotate(-90 44 44)" style="transition:stroke-dashoffset 1s ease"/>
+            </svg>
+            <div class="ring-label"><div class="ring-pct" id="scorePct">0%</div><div class="ring-sub">score</div></div>
+          </div>
+          <div class="break-rows">
+            <div class="br-row"><span class="br-lbl">Correct</span><div class="br-bg"><div class="br-fill" id="brCorrect" style="width:0%;background:var(--success)"></div></div><span class="br-val" id="brCv">0</span></div>
+            <div class="br-row"><span class="br-lbl">Wrong</span><div class="br-bg"><div class="br-fill" id="brWrong" style="width:0%;background:var(--danger)"></div></div><span class="br-val" id="brWv">0</span></div>
+            <div class="br-row"><span class="br-lbl">Skipped</span><div class="br-bg"><div class="br-fill" id="brSkip" style="width:0%;background:var(--text3)"></div></div><span class="br-val" id="brSv">0</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">AI Feedback</div>
+        <div id="aiFeedback" style="font-size:13px;color:var(--text2);line-height:1.8"></div>
+        <div style="margin-top:12px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Weak topics flagged</div>
+          <div id="weakTopics" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SMS CTA -->
+    <div class="sms-cta-banner">
+      <div class="sms-cta-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--sms)" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+      <div style="flex:1">
+        <div style="font-size:13.5px;font-weight:600;color:var(--sms);margin-bottom:4px;font-family:'Syne',sans-serif">Get Your Revision Summary by SMS</div>
+        <div style="font-size:12.5px;color:var(--text2);line-height:1.6">Receive an instant SMS with your score, weak topics, and revision schedule — so you never miss a session.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+        <button class="btn sm sms-btn" onclick="openSmsModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Send SMS
+        </button>
+        <div id="twilioStatusBadgeResults" style="font-size:10.5px;text-align:center;color:var(--text3)">not configured</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:4px">
+      <div class="card-title">Question Breakdown</div>
+      <div id="breakdown"></div>
+    </div>
+    <div id="scheduleNotifRow" style="margin-top:4px;padding:18px 20px;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--rxl)">
+      <div style="font-size:14px;font-weight:600;color:var(--accent2);margin-bottom:6px;font-family:'Syne',sans-serif">Revision Schedule Created</div>
+      <div style="font-size:12.5px;color:var(--text2);margin-bottom:14px;line-height:1.6">Based on your performance, we scheduled spaced revision sessions. Reminder notifications will trigger at each checkpoint.</div>
+      <div id="schedSummary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════  PAGE: REVISION  ══════════════════════════════════════ -->
+<div class="page" id="page-revision">
+  <div id="revEmpty" class="empty-state">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Complete a quiz to create your revision schedule.
+  </div>
+  <div id="revContent" style="display:none">
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">Spaced Revision Schedule</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:2px">Based on Ebbinghaus forgetting curve</div>
+      </div>
+      <button class="btn sm sms-btn" onclick="openSmsModal()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        SMS Schedule
+      </button>
+    </div>
+    <div class="sched-grid" id="schedGrid"></div>
+    <div style="margin-top:16px" class="card">
+      <div class="card-title">Next Revision Countdown</div>
+      <div id="nextRevWrap"></div>
+    </div>
+    <div style="margin-top:4px" class="card">
+      <div style="margin-bottom:16px">
+        <div class="sec-title" style="margin-bottom:4px">Notification Settings</div>
+        <div style="font-size:12px;color:var(--text2)">Choose how you want to be reminded about upcoming revision sessions.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label class="check-row">
+          <input type="checkbox" id="chkBrowser" checked>
+          <div><div class="check-row-label">Browser Notifications</div><div class="check-row-sub">Pop-up reminders when the browser is open</div></div>
+        </label>
+        <label class="check-row">
+          <input type="checkbox" id="chkInApp" checked>
+          <div><div class="check-row-label">In-App Notification Panel</div><div class="check-row-sub">Updates in the Notifications tab</div></div>
+        </label>
+        <label class="check-row">
+          <input type="checkbox" id="chkSms" checked>
+          <div><div class="check-row-label">SMS Reminders (via Twilio)</div><div class="check-row-sub">Real SMS delivered to your phone — requires one-time setup</div></div>
+        </label>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap">
+        <button class="btn sm prim" onclick="fireTestNotif()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          Send Test Notification
+        </button>
+        <button class="btn sm sms-btn" onclick="openSmsModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Send SMS Now
+        </button>
+        <button class="btn sm setup-btn" onclick="openSetupModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          Configure Twilio
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════  PAGE: NOTIFICATIONS  ══════════════════════════════════════ -->
+<div class="page" id="page-notifications">
+  <div class="sec-header">
+    <div>
+      <div class="sec-title">All Notifications</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:2px" id="notifSubtitle">No notifications yet</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn sm" onclick="markAllRead()">Mark all read</button>
+      <button class="btn sm sms-btn" onclick="openSmsModal()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        SMS Summary
+      </button>
+    </div>
+  </div>
+  <div class="notif-list" id="notifList">
+    <div class="empty-state">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      No notifications yet. Complete a quiz to start receiving reminders.
+    </div>
+  </div>
+</div>
+
+</div><!-- .app -->
+
+<script>
+/* ═══════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════ */
+const state = {
+  file: null, topics: [], questions: [], answers: {},
+  score: null, schedule: [], notifications: [], unread: 0,
+  quizGenerated: false, quizSubmitted: false, countdownInterval: null,
+  smsHistory: [],
+  twilio: { accountSid: '', authToken: '', fromNumber: '', configured: false }
+};
+
+/* ═══════════════════════════════════════════════
+   TWILIO CONFIG — persisted in localStorage
+═══════════════════════════════════════════════ */
+function loadTwilioConfig() {
+  try {
+    const saved = localStorage.getItem('studyai_twilio');
+    if (saved) {
+      const cfg = JSON.parse(saved);
+      state.twilio = { ...cfg, configured: !!(cfg.accountSid && cfg.authToken && cfg.fromNumber) };
+      if (state.twilio.configured) {
+        document.getElementById('twilio_sid').value = cfg.accountSid;
+        document.getElementById('twilio_token').value = cfg.authToken;
+        document.getElementById('twilio_from').value = cfg.fromNumber;
+      }
+    }
+  } catch(e) {}
+  updateTwilioStatusUI();
+}
+
+function saveTwilioConfig() {
+  const sid = document.getElementById('twilio_sid').value.trim();
+  const token = document.getElementById('twilio_token').value.trim();
+  const from = document.getElementById('twilio_from').value.trim();
+  if (!sid || !token || !from) {
+    showToast('warn', 'Missing fields', 'Please fill in all three fields: Account SID, Auth Token, and From Number.');
+    return;
+  }
+  if (!from.startsWith('+')) {
+    showToast('warn', 'Invalid number', 'From Number must be in E.164 format, e.g. +12025551234');
+    return;
+  }
+  state.twilio = { accountSid: sid, authToken: token, fromNumber: from, configured: true };
+  localStorage.setItem('studyai_twilio', JSON.stringify({ accountSid: sid, authToken: token, fromNumber: from }));
+  document.getElementById('setupModal').classList.remove('open');
+  updateTwilioStatusUI();
+  showToast('info', '✅ Twilio configured!', 'Real SMS will now be sent to the number you enter.');
+}
+
+function updateTwilioStatusUI() {
+  const ok = state.twilio.configured;
+  const navLabel = document.getElementById('setupNavLabel');
+  const navBtn = document.getElementById('setupNavBtn');
+  const badge = document.getElementById('twilioStatusBadgeResults');
+  if (navLabel) navLabel.textContent = ok ? '✓ SMS Active' : 'Setup SMS';
+  if (navBtn) {
+    navBtn.style.background = ok ? 'var(--success-bg)' : '';
+    navBtn.style.borderColor = ok ? 'var(--success-border)' : '';
+    navBtn.style.color = ok ? 'var(--success)' : '';
+  }
+  if (badge) {
+    badge.textContent = ok ? '✓ Twilio active' : '⚠ not configured';
+    badge.style.color = ok ? 'var(--success)' : 'var(--setup)';
+  }
+}
+
+function openSetupModal() {
+  document.getElementById('setupModal').classList.add('open');
+}
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════ */
+function goPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(t => t.classList.remove('on'));
+  document.getElementById('page-' + id).classList.add('on');
+  if (el) el.classList.add('on');
+}
+function goPageBtn(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(t => { if (t.textContent.trim().toLowerCase().includes(id.toLowerCase())) t.classList.add('on'); });
+  document.getElementById('page-' + id).classList.add('on');
+}
+
+/* ═══════════════════════════════════════════════
+   FILE HANDLING
+═══════════════════════════════════════════════ */
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('drag');
+  const files = e.dataTransfer.files;
+  if (files.length) handleFiles(files);
+}
+function handleFiles(files) {
+  const file = files[0]; if (!file) return;
+  state.file = file; startProcessing(file);
+}
+function startProcessing(file) {
+  document.getElementById('procCard').style.display = 'block';
+  document.getElementById('procTitle').textContent = 'Processing: ' + file.name;
+  const ext = file.name.split('.').pop().toLowerCase();
+  const steps = [
+    { label: 'Reading file contents', duration: 600 },
+    { label: ext === 'pdf' ? 'Parsing PDF pages' : ext === 'txt' ? 'Extracting plain text' : (ext === 'png'||ext === 'jpg'||ext === 'jpeg') ? 'Running OCR on image' : 'Parsing document structure', duration: 900 },
+    { label: 'AI topic extraction', duration: 1100 },
+    { label: 'Structuring knowledge graph', duration: 700 },
+    { label: 'Preparing quiz templates', duration: 500 }
+  ];
+  document.getElementById('stepList').innerHTML = steps.map((s,i) => `
+    <div class="step-row" id="step${i}">
+      <div class="step-icon step-wait" id="sicon${i}">○</div>
+      <span id="slbl${i}">${s.label}</span>
+    </div>`).join('');
+  let elapsed = 0;
+  const total = steps.reduce((a,b) => a + b.duration, 0);
+  const bar = document.getElementById('procBar');
+  function runStep(i) {
+    if (i >= steps.length) {
+      document.getElementById('procBadge').textContent = 'Done';
+      document.getElementById('procBadge').className = 'badge badge-s';
+      finishProcessing(file); return;
+    }
+    document.getElementById('sicon'+i).className = 'step-icon step-run spin';
+    document.getElementById('sicon'+i).textContent = '↻';
+    setTimeout(() => {
+      elapsed += steps[i].duration;
+      bar.style.width = Math.round(elapsed/total*100) + '%';
+      document.getElementById('sicon'+i).className = 'step-icon step-done';
+      document.getElementById('sicon'+i).textContent = '✓';
+      runStep(i+1);
+    }, steps[i].duration);
+  }
+  runStep(0);
+  if (file.type === 'text/plain') {
+    const reader = new FileReader();
+    reader.onload = e => { state.fileText = e.target.result; };
+    reader.readAsText(file);
+  } else { state.fileText = null; }
+}
+function finishProcessing(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  const topicSets = {
+    pdf: ['Introduction & Overview','Core Concepts','Definitions & Terminology','Key Formulas','Case Studies','Summary & Conclusions'],
+    txt: extractTopicsFromText(state.fileText),
+    docx: ['Chapter Summaries','Main Arguments','Supporting Evidence','Methodology','Results & Discussion'],
+    pptx: ['Slide 1-5: Introduction','Slide 6-12: Theory','Slide 13-18: Applications','Slide 19-24: Q&A'],
+    png: ['Diagram Elements','Visual Concepts','Labeled Components','Relationships'],
+    jpg: ['Image Analysis','Visual Content','Detected Text','Key Figures'],
+    jpeg: ['Image Analysis','Visual Content','Detected Text','Key Figures']
+  };
+  state.topics = (topicSets[ext] || topicSets.pdf).slice(0,5);
+  document.getElementById('uploadedCard').style.display = 'block';
+  document.getElementById('uploadedList').innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;padding:10px 0">
+      <div style="width:40px;height:40px;border-radius:10px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--accent-border)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:13.5px;font-weight:500;color:var(--text)">${file.name}</div>
+        <div style="font-size:11.5px;color:var(--text3);margin-top:3px">${(file.size/1024).toFixed(1)} KB · ${state.topics.length} topics extracted · just now</div>
+      </div>
+      <span class="badge badge-s">Processed</span>
+    </div>`;
+  document.getElementById('topicsCard').style.display = 'block';
+  document.getElementById('topicsList').innerHTML = state.topics.map((t,i) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border-radius:var(--r);border:1px solid var(--border)">
+      <div style="width:22px;height:22px;border-radius:6px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--accent2);flex-shrink:0;font-family:'DM Mono',monospace;border:1px solid var(--accent-border)">${i+1}</div>
+      <span style="font-size:13px;color:var(--text);flex:1">${t}</span>
+      <span class="badge badge-p" style="font-size:10px">Topic</span>
+    </div>`).join('');
+  document.getElementById('quizEmpty').style.display = 'none';
+  document.getElementById('quizContent').style.display = 'block';
+  document.getElementById('quizTopicLabel').textContent = file.name.replace(/\.[^/.]+$/,'') + ' — Quiz';
+  document.getElementById('quizMeta').textContent = state.topics.length + ' topics · Select difficulty and generate';
+  addNotification({ type: 'info', title: 'File processed successfully', msg: file.name + ' is ready. ' + state.topics.length + ' topics extracted. Generate your quiz now.' });
+  showToast('info', 'File ready', file.name + ' processed. Go generate your quiz!');
+}
+function extractTopicsFromText(text) {
+  if (!text) return ['Section 1','Section 2','Key Concepts','Summary','Important Points'];
+  const lines = text.split('\n').filter(l => l.trim().length > 10 && l.trim().length < 80);
+  const candidates = lines.slice(0,20).filter((_,i) => i%3===0).slice(0,5);
+  return candidates.length >= 3 ? candidates.map(l => l.trim().substring(0,50)) : ['Introduction','Core Concepts','Key Definitions','Important Points','Summary'];
+}
+
+/* ═══════════════════════════════════════════════
+   QUESTION BANK
+═══════════════════════════════════════════════ */
+const QUESTION_BANK = [
+  { text: 'Which of the following best describes the main concept introduced in the uploaded content?', opts: ['A broad theoretical framework for analysis','A step-by-step procedural methodology','A comparative study of multiple paradigms','A historical chronology of events'], correct: 0, diff: 'easy', type: 'MCQ' },
+  { text: 'According to the material, what is the primary challenge addressed by the key topic?', opts: ['Lack of empirical data','Complexity in implementation','Inconsistency in terminology','Limited scope of application'], correct: 1, diff: 'medium', type: 'MCQ' },
+  { text: 'Which relationship is most accurately described between the core concepts in the document?', opts: ['Causal and unidirectional','Bidirectional and interdependent','Independent and unrelated','Hierarchical with no feedback'], correct: 1, diff: 'hard', type: 'MCQ' },
+  { text: 'The document suggests that the most effective approach to the problem involves:', opts: ['Isolating variables and testing individually','Integrating multiple frameworks simultaneously','Applying a single proven methodology','Deferring to historical precedent'], correct: 1, diff: 'medium', type: 'MCQ' },
+  { text: 'What does the material identify as the foundational assumption underlying all discussed models?', opts: ['Systems are inherently stable','Observed patterns are reproducible','Data is always complete and accurate','Complexity decreases with scale'], correct: 1, diff: 'hard', type: 'MCQ' },
+  { text: 'Based on the content, which example best illustrates the concept in practice?', opts: ['A controlled laboratory experiment','A real-world deployment with constraints','A theoretical proof without application','A survey of expert opinions only'], correct: 1, diff: 'easy', type: 'MCQ' },
+  { text: 'Explain in your own words the main idea presented in the uploaded content and its significance.', type: 'Short', diff: 'easy', answer: 'Expected: A clear description of the core topic and why it matters in context.' },
+  { text: 'Describe one key limitation mentioned or implied in the content and how it might be addressed.', type: 'Short', diff: 'medium', answer: 'Expected: Identification of a constraint and a proposed mitigation strategy.' },
+  { text: 'Compare two approaches discussed in the material. What are the trade-offs between them?', type: 'Short', diff: 'hard', answer: 'Expected: Clear comparison with pros/cons of each approach and context-dependent recommendation.' },
+  { text: 'Critically evaluate the assumptions underlying the main argument. Are they well-justified given the evidence presented?', type: 'Conceptual', diff: 'hard', answer: 'Expected: Analysis of assumptions, identification of gaps, and evidence-based critique.' },
+];
+
+/* ═══════════════════════════════════════════════
+   QUIZ
+═══════════════════════════════════════════════ */
+function generateQuiz() {
+  if (!state.file) { showToast('warn','No file uploaded','Please upload a study file first.'); return; }
+  const diff = document.getElementById('diffSelect').value;
+  let pool = [...QUESTION_BANK];
+  if (diff !== 'mixed') pool = pool.filter(q => q.diff === diff);
+  if (pool.length < 3) pool = QUESTION_BANK;
+  state.questions = pool.slice(0, Math.min(8, pool.length));
+  state.answers = {}; state.quizSubmitted = false;
+  const qc = document.getElementById('quizQuestions');
+  qc.innerHTML = state.questions.map((q,i) => {
+    const db = q.diff==='easy' ? '<span class="diff-e">Easy</span>' : q.diff==='medium' ? '<span class="diff-m">Medium</span>' : '<span class="diff-h">Hard</span>';
+    if (q.type==='MCQ') return `<div class="q-card" id="qcard${i}">
+      <div class="q-head"><span class="q-num">Q${i+1}</span><span class="q-type">${q.type}</span>${db}</div>
+      <div class="q-text">${q.text}</div>
+      <div class="opts">${q.opts.map((o,j) => `<div class="opt" id="opt${i}_${j}" onclick="pickOpt(${i},${j})"><div class="opt-dot">${'ABCD'[j]}</div>${o}</div>`).join('')}</div>
+    </div>`;
+    return `<div class="q-card" id="qcard${i}">
+      <div class="q-head"><span class="q-num">Q${i+1}</span><span class="q-type">${q.type}</span>${db}</div>
+      <div class="q-text">${q.text}</div>
+      <textarea class="short-ta" id="ta${i}" placeholder="Type your answer here..." oninput="state.answers[${i}]=this.value.trim()"></textarea>
+    </div>`;
+  }).join('');
+  document.getElementById('submitRow').style.display = 'block';
+  state.quizGenerated = true;
+  showToast('info','Quiz ready', state.questions.length + ' questions generated from your file.');
+}
+function pickOpt(qi,oi) {
+  if (state.quizSubmitted) return;
+  for (let j=0;j<4;j++) { const e = document.getElementById('opt'+qi+'_'+j); if(e) e.classList.remove('sel'); }
+  const e = document.getElementById('opt'+qi+'_'+oi); if(e) e.classList.add('sel');
+  state.answers[qi] = oi;
+}
+function submitQuiz() {
+  if (state.quizSubmitted) return;
+  state.quizSubmitted = true;
+  document.getElementById('submitRow').style.display = 'none';
+  let correct=0, wrong=0, skip=0;
+  state.questions.forEach((q,i) => {
+    if (q.type==='MCQ') {
+      const chosen = state.answers[i];
+      if (chosen===undefined){skip++;return;}
+      const isRight = chosen===q.correct;
+      if(isRight) correct++; else wrong++;
+      for(let j=0;j<q.opts.length;j++){
+        const e=document.getElementById('opt'+i+'_'+j); if(!e) continue;
+        e.onclick=null;
+        if(j===q.correct) e.classList.add('right');
+        else if(j===chosen&&!isRight) e.classList.add('wrong');
+        e.classList.remove('sel');
+      }
+      const card=document.getElementById('qcard'+i);
+      const ad=document.createElement('div'); ad.className='ans-box';
+      ad.textContent=isRight?'✓ Correct!':'✗ Correct answer: '+'ABCD'[q.correct]+'. '+q.opts[q.correct];
+      card.appendChild(ad);
+    } else {
+      const txt=state.answers[i];
+      if(!txt){skip++;}else{correct++;}
+      const card=document.getElementById('qcard'+i);
+      const ad=document.createElement('div'); ad.className='ans-box';
+      ad.textContent='Model answer: '+q.answer;
+      card.appendChild(ad);
+    }
+  });
+  const total=state.questions.length;
+  const pct=Math.round((correct/total)*100);
+  state.score={correct,wrong,skip,pct,total};
+  buildResults(state.score);
+  buildSchedule();
+  goPageBtn('results');
+  showToast('info','Quiz submitted!','You scored '+pct+'%. Check your results and revision schedule.');
+}
+
+/* ═══════════════════════════════════════════════
+   RESULTS
+═══════════════════════════════════════════════ */
+function buildResults(s) {
+  document.getElementById('resultsEmpty').style.display='none';
+  document.getElementById('resultsContent').style.display='block';
+  const pct=s.pct, circ=2*Math.PI*36;
+  setTimeout(()=>{
+    document.getElementById('ringArc').style.strokeDashoffset=circ-(pct/100*circ);
+    document.getElementById('ringArc').style.stroke=pct>=70?'var(--success)':pct>=40?'var(--warn)':'var(--danger)';
+  },100);
+  document.getElementById('scorePct').textContent=pct+'%';
+  document.getElementById('scorePct').style.color=pct>=70?'var(--success)':pct>=40?'var(--warn)':'var(--danger)';
+  document.getElementById('brCorrect').style.width=Math.round(s.correct/s.total*100)+'%';
+  document.getElementById('brWrong').style.width=Math.round(s.wrong/s.total*100)+'%';
+  document.getElementById('brSkip').style.width=Math.round(s.skip/s.total*100)+'%';
+  document.getElementById('brCv').textContent=s.correct+'/'+s.total;
+  document.getElementById('brWv').textContent=s.wrong+'/'+s.total;
+  document.getElementById('brSv').textContent=s.skip+'/'+s.total;
+  document.getElementById('aiFeedback').innerHTML = pct>=70
+    ? '✦ Strong performance! You have a solid grasp of most topics. Focus on the questions you missed to push further.'
+    : pct>=40 ? '◈ Moderate result. Several concept gaps detected. Prioritise the weak topics below and schedule revision soon.'
+    : '◉ Needs improvement. Multiple weak areas detected. Start with foundational concepts and use spaced repetition.';
+  const weakSample=state.topics.slice(0,Math.min(s.wrong+s.skip+1,state.topics.length));
+  document.getElementById('weakTopics').innerHTML=weakSample.map(t=>`<span class="badge badge-d">${t}</span>`).join('');
+  document.getElementById('breakdown').innerHTML=state.questions.map((q,i)=>{
+    const ans=state.answers[i],isShort=q.type!=='MCQ';
+    const status=isShort?(ans?'answered':'skipped'):(ans===undefined?'skipped':ans===q.correct?'correct':'wrong');
+    const cls=status==='correct'||status==='answered'?'badge-s':status==='wrong'?'badge-d':'badge-w';
+    return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text3);width:24px">Q${i+1}</span>
+      <span style="flex:1;font-size:12.5px;color:var(--text2)">${q.text.substring(0,80)}${q.text.length>80?'…':''}</span>
+      <span class="badge ${cls}">${status}</span>
+    </div>`;
+  }).join('');
+  updateSmsPreview();
+  updateTwilioStatusUI();
+}
+
+/* ═══════════════════════════════════════════════
+   SCHEDULE
+═══════════════════════════════════════════════ */
+function buildSchedule() {
+  const now=new Date();
+  const intervals=[
+    {label:'Day 1',days:1,color:'var(--accent2)',note:'Initial review'},
+    {label:'Day 3',days:3,color:'var(--info)',note:'Second pass'},
+    {label:'Day 7',days:7,color:'var(--warn)',note:'Spaced repetition'},
+    {label:'Day 14',days:14,color:'var(--success)',note:'Long-term retention'}
+  ];
+  state.schedule=intervals.map(iv=>{
+    const d=new Date(now.getTime()+iv.days*86400000);
+    return {...iv,date:d};
+  });
+  document.getElementById('schedSummary').innerHTML=state.schedule.map(s=>`
+    <div style="padding:10px 12px;background:var(--surface);border-radius:var(--r);border:1px solid var(--border);text-align:center">
+      <div style="font-size:10.5px;color:var(--text3);font-family:'DM Mono',monospace;text-transform:uppercase">${s.label}</div>
+      <div style="font-size:12.5px;font-weight:500;color:var(--text);margin:4px 0;font-family:'Syne',sans-serif">${fmtDate(s.date)}</div>
+      <div style="font-size:11px;color:var(--text3)">${s.note}</div>
+    </div>`).join('');
+  document.getElementById('revEmpty').style.display='none';
+  document.getElementById('revContent').style.display='block';
+  document.getElementById('schedGrid').innerHTML=state.schedule.map((s,i)=>`
+    <div class="sched-card">
+      <div class="sched-day">${s.label}</div>
+      <div class="sched-date">${fmtDate(s.date)}</div>
+      <div style="font-size:11px;color:var(--text2)">${fmtTime(s.date)}</div>
+      <div class="sched-topic">${state.topics[i%state.topics.length]||'Full review'}</div>
+      <div class="sched-countdown" style="color:${s.color};margin-top:4px" id="cd${i}">${getCountdownStr(s.date)}</div>
+    </div>`).join('');
+  startCountdowns();
+  buildNextRevision();
+  scheduleRevisionNotifs();
+  updateSmsPreview();
+}
+function startCountdowns() {
+  if (state.countdownInterval) clearInterval(state.countdownInterval);
+  state.countdownInterval=setInterval(()=>{
+    state.schedule.forEach((s,i)=>{const e=document.getElementById('cd'+i);if(e)e.textContent=getCountdownStr(s.date);});
+    buildNextRevision();
+  },1000);
+}
+function buildNextRevision() {
+  const next=state.schedule[0]; if(!next) return;
+  const diff=next.date-new Date();
+  const h=Math.max(0,Math.floor(diff/3600000));
+  const m=Math.max(0,Math.floor((diff%3600000)/60000));
+  const s=Math.max(0,Math.floor((diff%60000)/1000));
+  const wrap=document.getElementById('nextRevWrap'); if(!wrap) return;
+  wrap.innerHTML=`
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">
+      Next: <strong style="color:var(--text)">${state.topics[0]||'Full review'}</strong> — ${fmtDate(next.date)} at ${fmtTime(next.date)}
+    </div>
+    <div class="timer-wrap">
+      <div class="timer-unit"><span class="timer-val">${String(h).padStart(2,'0')}</span><div class="timer-lbl">hours</div></div>
+      <div class="timer-sep">:</div>
+      <div class="timer-unit"><span class="timer-val">${String(m).padStart(2,'0')}</span><div class="timer-lbl">min</div></div>
+      <div class="timer-sep">:</div>
+      <div class="timer-unit"><span class="timer-val">${String(s).padStart(2,'0')}</span><div class="timer-lbl">sec</div></div>
+    </div>`;
+}
+function scheduleRevisionNotifs() {
+  state.schedule.forEach((s,i)=>{
+    const topic=state.topics[i%state.topics.length]||'Full review';
+    addNotification({
+      type:i===0?'urgent':i===1?'due':'unread',
+      title:s.label+' Revision Reminder — '+topic,
+      msg:'Scheduled for '+fmtDate(s.date)+' at '+fmtTime(s.date)+'. Review key concepts to maintain retention.'+(i===0?' High priority — first review is critical!':'')
+    });
+  });
+  addNotification({type:'info',title:'Revision schedule created',msg:'4 spaced revision sessions scheduled based on your quiz performance. Check the Revision page for the full schedule.'});
+  showToast('due','Revision schedule set','First revision in '+getCountdownStr(state.schedule[0].date)+'. We\'ll remind you!');
+}
+
+/* ═══════════════════════════════════════════════
+   NOTIFICATIONS
+═══════════════════════════════════════════════ */
+function addNotification(n) {
+  state.notifications.unshift({...n,time:new Date(),read:false});
+  state.unread++;
+  renderNotifs();
+  const el=document.getElementById('notifCount');
+  if(el) el.textContent=state.unread;
+}
+function renderNotifs() {
+  const list=document.getElementById('notifList');
+  const sub=document.getElementById('notifSubtitle');
+  if(!state.notifications.length){list.innerHTML='<div class="empty-state"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>No notifications yet.</div>';return;}
+  if(sub) sub.textContent=state.notifications.length+' notifications · '+state.unread+' unread';
+  list.innerHTML=state.notifications.map((n,i)=>{
+    const cls=n.type==='urgent'?'urgent':n.type==='due'?'due':n.type==='unread'?'unread':n.type==='sms'?'sms-sent':'';
+    const dotC=n.type==='urgent'?'var(--danger)':n.type==='due'?'var(--warn)':n.type==='unread'?'var(--accent2)':n.type==='sms'?'var(--sms)':'var(--text3)';
+    return `<div class="notif-item ${cls}" id="ni${i}">
+      <div class="ni-dot" style="background:${dotC}"></div>
+      <div class="ni-body">
+        <div class="ni-title">${n.title}</div>
+        <div class="ni-sub">${n.msg}</div>
+        <div class="ni-actions">
+          <button class="ni-btn primary" onclick="markRead(${i})">Mark read</button>
+          ${n.type==='urgent'||n.type==='due'?'<button class="ni-btn" onclick="goPageBtn(\'revision\')">View schedule</button>':''}
+          ${n.type==='sms'?'<span class="badge badge-e" style="font-size:10px">📱 Sent via Twilio</span>':''}
+        </div>
+      </div>
+      <div class="ni-time">${timeAgo(n.time)}</div>
+    </div>`;
+  }).join('');
+}
+function markRead(i) {
+  const el=document.getElementById('ni'+i);
+  if(el) el.classList.remove('urgent','due','unread','sms-sent');
+  if(!state.notifications[i].read){state.notifications[i].read=true;state.unread=Math.max(0,state.unread-1);}
+  const cnt=document.getElementById('notifCount');
+  if(cnt) cnt.textContent=state.unread||'0';
+}
+function markAllRead() {
+  state.notifications.forEach((n,i)=>{
+    n.read=true;
+    const el=document.getElementById('ni'+i);
+    if(el) el.classList.remove('urgent','due','unread','sms-sent');
+  });
+  state.unread=0;
+  const cnt=document.getElementById('notifCount');
+  if(cnt) cnt.textContent='0';
+}
+function timeAgo(d) {
+  const s=Math.floor((new Date()-d)/1000);
+  if(s<60) return 'just now';
+  if(s<3600) return Math.floor(s/60)+'m ago';
+  if(s<86400) return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+function fireTestNotif() {
+  if(!state.schedule.length){showToast('warn','No schedule yet','Complete a quiz first to create a revision schedule.');return;}
+  const next=state.schedule[0], topic=state.topics[0]||'Full review';
+  addNotification({type:'urgent',title:'Test Reminder — '+topic,msg:'This is how your reminder will look. Next session: '+fmtDate(next.date)+' at '+fmtTime(next.date)+'. Countdown: '+getCountdownStr(next.date)});
+  showToast('due','Test notification sent!','Check the Notifications tab to see it.');
+  if(document.getElementById('chkBrowser').checked){
+    if(Notification&&Notification.permission==='granted'){
+      new Notification('StudyAI — Revision Reminder',{body:topic+': '+getCountdownStr(next.date)});
+    } else if(Notification&&Notification.permission!=='denied'){
+      Notification.requestPermission().then(p=>{if(p==='granted') new Notification('StudyAI — Revision Reminder',{body:topic+': '+getCountdownStr(next.date)});});
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   SMS MODAL — open / close
+═══════════════════════════════════════════════ */
+function openSmsModal() {
+  updateSmsPreview();
+  const notConfigWarn = document.getElementById('smsNotConfiguredWarn');
+  if (!state.twilio.configured) {
+    notConfigWarn.style.display = 'block';
+  } else {
+    notConfigWarn.style.display = 'none';
+  }
+  document.getElementById('smsModal').classList.add('open');
+}
+function closeSmsModal() {
+  document.getElementById('smsModal').classList.remove('open');
+}
+document.getElementById('smsModal').addEventListener('click', function(e){ if(e.target===this) closeSmsModal(); });
+document.getElementById('setupModal').addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); });
+
+/* ═══════════════════════════════════════════════
+   SMS PREVIEW — plain text message
+═══════════════════════════════════════════════ */
+function buildSmsText() {
+  if (!state.score) return 'Complete a quiz to see the SMS preview.';
+  const weakTopics = state.topics.slice(0, Math.min(state.score.wrong + state.score.skip + 1, state.topics.length));
+  const nextSession = state.schedule[0];
+  let msg = '📘 StudyAI Revision Summary\n';
+  msg += '━━━━━━━━━━━━━━━━━\n';
+  msg += `Score: ${state.score.pct}% (${state.score.correct}/${state.score.total} correct)\n`;
+  if (state.file) msg += `File: ${state.file.name}\n`;
+  msg += '\n';
+  if (weakTopics.length) {
+    msg += `⚠ Revise first:\n${weakTopics.map(t => '• ' + t).join('\n')}\n\n`;
+  }
+  if (nextSession) {
+    msg += `📅 Next session (${nextSession.label}):\n${fmtDate(nextSession.date)} at ${fmtTime(nextSession.date)}\n\n`;
+  }
+  if (state.schedule.length > 1) {
+    msg += `Full schedule: ${state.schedule.map(s => s.label + ' ' + fmtDate(s.date)).join(', ')}\n\n`;
+  }
+  msg += '💡 Tip: Days 1,3,7,14 review maximises retention.\n';
+  msg += '— StudyAI';
+  return msg;
+}
+
+function updateSmsPreview() {
+  const body = document.getElementById('smsPreviewBody');
+  if (!body) return;
+  body.textContent = buildSmsText();
+}
+
+function generateConceptSummaries() {
+  const pool=[
+    'The introductory section establishes the foundational context and motivation for studying this topic. Core terminology is defined here and sets expectations for the rest of the material.',
+    'Central ideas form the backbone of the subject. Mastering these ensures you can tackle advanced questions. Focus on relationships between concepts, not just individual definitions.',
+    'Precise definitions prevent confusion in application. Review each term in context — understand not just what it means, but when and why it is used.',
+    'Formulas encode relationships mathematically. Practice deriving them from first principles rather than memorising, as this reveals deeper understanding.',
+    'Real-world applications test whether you can transfer abstract knowledge to concrete situations. Practice with varied examples to build flexible thinking.',
+  ];
+  return state.topics.slice(0,3).map((t,i)=>({topic:t,summary:pool[i%pool.length]}));
+}
+
+/* ═══════════════════════════════════════════════
+   SEND REAL SMS via Twilio REST API (CORS proxy)
+═══════════════════════════════════════════════ */
+async function sendSms() {
+  const smsTo = document.getElementById('smsTo').value.trim();
+
+  if (!smsTo || !smsTo.startsWith('+')) {
+    showToast('warn', 'Invalid number', 'Enter your phone number in E.164 format, e.g. +919876543210'); return;
+  }
+  if (!state.score) {
+    showToast('warn', 'No quiz data', 'Complete a quiz first so we have data to include in the SMS.'); return;
+  }
+  if (!state.twilio.configured) {
+    showToast('warn', 'Twilio not configured', 'Click "Setup SMS" to connect Twilio. It takes ~5 minutes and is free.');
+    closeSmsModal(); openSetupModal(); return;
+  }
+
+  const btn = document.getElementById('sendSmsBtn');
+  const btnText = document.getElementById('sendSmsBtnText');
+  btn.disabled = true;
+  btnText.textContent = 'Sending…';
+
+  const msgBody = buildSmsText();
+
+  try {
+    // Twilio REST API via allorigins CORS proxy
+    const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${state.twilio.accountSid}/Messages.json`;
+    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(twilioUrl);
+
+    const formData = new URLSearchParams();
+    formData.append('To', smsTo);
+    formData.append('From', state.twilio.fromNumber);
+    formData.append('Body', msgBody);
+
+    const basicAuth = btoa(state.twilio.accountSid + ':' + state.twilio.authToken);
+
+    const response = await fetch(proxyUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Basic ' + basicAuth
+      },
+      body: formData.toString()
+    });
+
+    const responseText = await response.text();
+    let data;
+    try { data = JSON.parse(responseText); } catch(e) { data = {}; }
+
+    if (response.ok && data.sid) {
+      closeSmsModal();
+      showToast('info', '✅ SMS sent!', 'Revision summary delivered to ' + smsTo + '. Check your phone!');
+      addNotification({
+        type: 'info',
+        title: '📱 SMS delivered to ' + smsTo,
+        msg: 'Revision summary (score: ' + state.score.pct + '%, file: ' + (state.file ? state.file.name : 'N/A') + ') sent via Twilio at ' + fmtTime(new Date()) + '.'
+      });
+      state.smsHistory.push({ to: smsTo, sentAt: new Date(), score: state.score.pct });
+      document.getElementById('smsTo').value = '';
+    } else {
+      const errMsg = data.message || data.error_message || ('HTTP ' + response.status);
+      throw new Error(errMsg);
+    }
+  } catch(err) {
+    console.error('Twilio SMS error:', err);
+    const errMsg = err && err.message ? err.message : 'Unknown error';
+    showToast('urgent', 'SMS failed', 'Error: ' + errMsg + '. Check your Twilio credentials and that the recipient number is verified (trial accounts).');
+    addNotification({ type: 'urgent', title: 'SMS failed to send', msg: 'Could not send to ' + smsTo + '. Error: ' + errMsg });
+  } finally {
+    btn.disabled = false;
+    btnText.textContent = 'Send SMS';
+  }
+}
+
+
+/* ═══════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════ */
+function showToast(type,title,msg) {
+  const area=document.getElementById('toastArea');
+  const t=document.createElement('div');
+  const iB={info:'var(--accent-bg)',due:'var(--warn-bg)',urgent:'var(--danger-bg)',warn:'var(--warn-bg)',sms:'var(--sms-bg)'};
+  const iC={info:'var(--accent2)',due:'var(--warn)',urgent:'var(--danger)',warn:'var(--warn)',sms:'var(--sms)'};
+  const icons={
+    info:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="1" fill="currentColor"/>',
+    due:'<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/>',
+    warn:'<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>',
+    urgent:'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+    sms:'<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>'
+  };
+  t.className='toast '+type;
+  t.innerHTML=`
+    <div class="toast-icon" style="background:${iB[type]||'var(--accent-bg)'}">
+      <svg viewBox="0 0 24 24" stroke="${iC[type]||'var(--accent2)'}" fill="none" stroke-width="1.8" width="16" height="16"><${icons[type]||icons.info}></svg>
+    </div>
+    <div class="toast-body"><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>
+    <div class="toast-close" onclick="this.parentElement.remove()">×</div>`;
+  area.appendChild(t);
+  setTimeout(()=>t.classList.add('show'),50);
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),350);},6000);
+}
+
+/* ═══════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════ */
+function getCountdownStr(date){
+  const diff=date-new Date();
+  if(diff<=0) return 'Due now!';
+  const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000);
+  if(d>0) return 'In '+d+'d '+h+'h '+m+'m';
+  if(h>0) return 'In '+h+'h '+m+'m';
+  return 'In '+m+'m '+Math.floor((diff%60000)/1000)+'s';
+}
+function fmtDate(d){return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}
+function fmtTime(d){return d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+loadTwilioConfig();
+</script>
+</body>
+</html>
